@@ -1,62 +1,5 @@
-// import ProfileCard from "./ProfileCard.jsx";
-
-// export function LoadingSkeleton() {
-//   return (
-//     <div className="skeleton-grid" aria-label="Loading results">
-//       {Array.from({ length: 4 }).map((_, i) => (
-//         <div className="skeleton-card" key={i} />
-//       ))}
-//     </div>
-//   );
-// }
-
-// export function EmptyState({ searched }) {
-//   if (!searched) {
-//     return (
-//       <div className="state-block">
-//         <h3>The file is open, waiting.</h3>
-//         <p>Fill in a few details above and run a search to start pulling public profile matches.</p>
-//       </div>
-//     );
-//   }
-//   return (
-//     <div className="state-block">
-//       <h3>No matches on record.</h3>
-//       <p>
-//         Nothing public was indexed for this combination. Try loosening a field — drop the
-//         location or shorten the job title — and search again.
-//       </p>
-//     </div>
-//   );
-// }
-
-// export function ErrorState({ message, onRetry }) {
-//   return (
-//     <div className="state-block error">
-//       <h3>The search hit a snag.</h3>
-//       <p>{message || "Something went wrong on our end."}</p>
-//       {onRetry && (
-//         <button className="btn-search" style={{ marginTop: 16 }} onClick={onRetry}>
-//           Try again
-//         </button>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default function ResultsGrid({ results }) {
-//   return (
-//     <div className="card-grid">
-//       {results.map((p) => (
-//         <ProfileCard profile={p} key={p.profileUrl} />
-//       ))}
-//     </div>
-//   );
-// }
-
-
+import { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard.jsx";
-
 
 export function LoadingSkeleton() {
   return (
@@ -68,113 +11,120 @@ export function LoadingSkeleton() {
   );
 }
 
-
-
 export function EmptyState({ searched }) {
-
   if (!searched) {
     return (
       <div className="state-block">
         <h3>The file is open, waiting.</h3>
         <p>
-          Fill in a few details above and run a search to start pulling public profile matches.
+          Fill in a few details above and run a search to start pulling public
+          profile matches.
         </p>
       </div>
     );
   }
 
-
   return (
     <div className="state-block">
-
-      <h3>No matches on record.</h3>
-
+      <h3>No matches found.</h3>
       <p>
-        Nothing public was indexed for this combination.
-        Try loosening a field and search again.
+        Nothing public was indexed for this search. Try removing some filters or
+        searching with different keywords.
       </p>
-
     </div>
   );
 }
-
-
-
 
 export function ErrorState({ message, onRetry }) {
-
   return (
-
     <div className="state-block error">
-
       <h3>The search hit a snag.</h3>
 
-      <p>
-        {message || "Something went wrong on our end."}
-      </p>
-
+      <p>{message || "Something went wrong."}</p>
 
       {onRetry && (
-
         <button
           className="btn-search"
-          style={{ marginTop: 16 }}
+          style={{ marginTop: "16px" }}
           onClick={onRetry}
         >
-          Try again
+          Try Again
         </button>
-
       )}
-
     </div>
-
   );
-
 }
 
-
-
-
-
 export default function ResultsGrid({ results = [] }) {
+  const INITIAL_COUNT = 4;
 
+  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
+
+  // Reset whenever new search results arrive
+  useEffect(() => {
+    setVisibleCount(INITIAL_COUNT);
+  }, [results]);
 
   if (!results.length) {
-
-    return (
-      <EmptyState searched={true} />
-    );
-
+    return <EmptyState searched={true} />;
   }
 
-
+  const visibleProfiles = results.slice(0, visibleCount);
 
   return (
+    <>
+      <div
+        style={{
+          marginBottom: "20px",
+          fontWeight: 600,
+          textAlign: "center",
+        }}
+      >
+        Showing {visibleProfiles.length} of {results.length} Profiles
+      </div>
 
-    <div className="card-grid">
+      <div className="card-grid">
+        {visibleProfiles.map((profile, index) => (
+          <ProfileCard
+            key={profile.profileUrl || profile.linkedinUrl || index}
+            profile={{
+              ...profile,
+              profileUrl: profile.profileUrl || profile.linkedinUrl,
+            }}
+          />
+        ))}
+      </div>
 
-      {results.map((profile, index) => (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "12px",
+          marginTop: "30px",
+        }}
+      >
+        {visibleCount < results.length && (
+          <button
+            className="btn-search"
+            onClick={() =>
+              setVisibleCount((prev) =>
+                Math.min(prev + INITIAL_COUNT, results.length)
+              )
+            }
+          >
+            View More
+          </button>
+        )}
 
-        <ProfileCard
-
-          key={index}
-
-          profile={{
-
-            ...profile,
-
-            profileUrl:
-              profile.profileUrl ||
-              profile.linkedinUrl
-
-          }}
-
-        />
-
-      ))}
-
-    </div>
-
+        {visibleCount > INITIAL_COUNT && (
+          <button
+            className="btn-search"
+            onClick={() => setVisibleCount(INITIAL_COUNT)}
+          >
+            Show Less
+          </button>
+        )}
+      </div>
+    </>
   );
-
 }
