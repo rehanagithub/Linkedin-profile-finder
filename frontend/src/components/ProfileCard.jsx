@@ -219,6 +219,108 @@
 
 // }
 
+// function initials(name) {
+//   if (!name) return "??";
+
+//   return name
+//     .split(" ")
+//     .filter(Boolean)
+//     .slice(0, 2)
+//     .map((word) => word[0].toUpperCase())
+//     .join("");
+// }
+
+// export default function ProfileCard({ profile }) {
+//   if (!profile) return null;
+
+//   const {
+//     name,
+//     title,
+//     jobTitle,
+//     company,
+//     location,
+//     profileUrl,
+//     linkedinUrl,
+//     snippet,
+//     description,
+//     relevance
+//   } = profile;
+
+//   const displayTitle = jobTitle || title || "";
+
+//   const displayDescription = snippet || description || "";
+
+//   const profileLink = profileUrl || linkedinUrl || "#";
+
+//   const matchScore = Math.min(100, Math.max(0, relevance || 0));
+
+//   return (
+//     <article className="profile-card">
+
+//       <div className="card-top">
+//         <span className="card-tab">
+//           {initials(name)}
+//         </span>
+
+//         <span className="match-score">
+//           {matchScore}% Match
+//         </span>
+//       </div>
+
+//       <h3 className="profile-name">
+//         {name || "Unknown"}
+//       </h3>
+
+//       {displayTitle && (
+//         <p className="profile-title">
+//           {displayTitle}
+//         </p>
+//       )}
+
+//       <div className="profile-meta">
+
+//         {company && (
+//           <span>
+//             <span className="icon">🏢</span>
+//             {company}
+//           </span>
+//         )}
+
+//         {location && (
+//           <span>
+//             <span className="icon">📍</span>
+//             {location}
+//           </span>
+//         )}
+
+//       </div>
+
+//       {displayDescription && (
+//         <p className="profile-snippet">
+//           {displayDescription}
+//         </p>
+//       )}
+
+//       {profileLink !== "#" ? (
+//         <a
+//           className="profile-link"
+//           href={profileLink}
+//           target="_blank"
+//           rel="noopener noreferrer"
+//         >
+//           View LinkedIn Profile ↗
+//         </a>
+//       ) : (
+//         <span className="profile-link disabled">
+//           Profile URL unavailable
+//         </span>
+//       )}
+
+//     </article>
+//   );
+// }
+
+
 function initials(name) {
   if (!name) return "??";
 
@@ -230,6 +332,17 @@ function initials(name) {
     .join("");
 }
 
+// Skills can arrive as a comma-separated string (from snippet extraction)
+// or already as an array. Normalize to an array of trimmed strings.
+function parseSkillsList(skills) {
+  if (!skills) return [];
+  if (Array.isArray(skills)) return skills.filter(Boolean);
+  return skills
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 export default function ProfileCard({ profile }) {
   if (!profile) return null;
 
@@ -239,6 +352,8 @@ export default function ProfileCard({ profile }) {
     jobTitle,
     company,
     location,
+    industry,
+    skills,
     profileUrl,
     linkedinUrl,
     snippet,
@@ -253,6 +368,8 @@ export default function ProfileCard({ profile }) {
   const profileLink = profileUrl || linkedinUrl || "#";
 
   const matchScore = Math.min(100, Math.max(0, relevance || 0));
+
+  const skillsList = parseSkillsList(skills);
 
   return (
     <article className="profile-card">
@@ -293,7 +410,24 @@ export default function ProfileCard({ profile }) {
           </span>
         )}
 
+        {industry && (
+          <span>
+            <span className="icon">🏷️</span>
+            {industry}
+          </span>
+        )}
+
       </div>
+
+      {skillsList.length > 0 && (
+        <div className="profile-skills">
+          {skillsList.map((skill, idx) => (
+            <span className="skill-chip" key={`${skill}-${idx}`}>
+              {skill}
+            </span>
+          ))}
+        </div>
+      )}
 
       {displayDescription && (
         <p className="profile-snippet">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import SearchForm from "./components/SearchForm.jsx";
 import ResultsGrid, { LoadingSkeleton, EmptyState, ErrorState } from "./components/ResultsGrid.jsx";
 import { searchProfiles } from "./api.js";
+//import "./styles/App.css";
 
 export default function App() {
   const [status, setStatus] = useState("idle"); // idle | loading | done | error
