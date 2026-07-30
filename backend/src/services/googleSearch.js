@@ -1,6 +1,6 @@
 // const axios = require("axios");
 
-// const SERPER_URL = "https://google.serper.dev/search";
+ const SERPER_URL = "https://google.serper.dev/search";
 
 // // ---------------------------------------------------------------------------
 // // Text helpers
@@ -1257,7 +1257,7 @@
 
 const axios = require("axios");
 
-const SERPAPI_URL = "https://serpapi.com/search.json";
+//const SERPAPI_URL = "https://serpapi.com/search.json";
 
 // ---------------------------------------------------------------------------
 // Text helpers
